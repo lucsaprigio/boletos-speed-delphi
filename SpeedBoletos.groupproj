@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{41F5B18E-EA30-4D49-B907-BC068ED87602}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="backend\ApiBoleto.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ApiBoleto">
+        <MSBuild Projects="backend\ApiBoleto.dproj"/>
+    </Target>
+    <Target Name="ApiBoleto:Clean">
+        <MSBuild Projects="backend\ApiBoleto.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ApiBoleto:Make">
+        <MSBuild Projects="backend\ApiBoleto.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ApiBoleto"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ApiBoleto:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ApiBoleto:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

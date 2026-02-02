@@ -1,0 +1,137 @@
+unit dao.retorno.speed.boletos;
+
+interface
+
+uses
+  FireDAC.Comp.Client,
+  FireDAC.Stan.Def,
+  FireDAC.Stan.StorageBin,
+  FireDAC.DApt,
+  FireDAC.VCLUI.Wait,
+  FireDAC.Comp.UI,
+  System.Generics.Collections,
+  System.SysUtils,
+  Vcl.Dialogs,
+  FireDAC.Phys.FB,
+  uDTOBoletos;
+
+type
+  TSpeedBoletos = class
+    private
+      FConn : TFDConnection;
+      FpCliente: Integer;
+    public
+      property pCliente : Integer read FpCliente write FpCliente;
+
+      constructor create(cd_banco : integer);
+      destructor destroy ; override;
+
+      function listar_object_list: TObjectList<TDadosBoleto>;
+      function lista_mem_table: TFDMemTable;
+  end;
+
+implementation
+
+
+{ TSpeedBoletos }
+
+constructor TSpeedBoletos.create(cd_banco: integer);
+begin
+   FConn := TFDConnection.Create(nil);
+   TFDPhysFBDriverLink.Create(nil);
+   TFDGUIxWaitCursor.Create(nil);
+
+   if FConn.Connected then Exit;
+
+
+   with FConn do begin
+     Params.Clear;
+     Params.DriverID := 'FB';
+     Params.Database := '192.168.0.90:/database/Financeiro/financeiro.fdb';
+     Params.UserName := 'sysdba';
+     Params.Password := 'mastekey';
+
+     LoginPrompt := False;
+   end;
+end;
+
+destructor TSpeedBoletos.destroy;
+begin
+    if Assigned(FConn) then
+      FConn.Free;
+
+  inherited;
+end;
+
+function TSpeedBoletos.listar_object_list: TObjectList<TDadosBoleto>;
+var
+  qry        : TFDQuery;
+  Boleto    : TDadosBoleto;
+begin
+  Result := TObjectList<TDadosBoleto>.Create(True);
+  qry := TFDQuery.Create(nil);
+  try
+    qry.Connection := FConn;
+
+    with qry do begin
+      SQL.Add(' SELECT SP_DOCUMENTO, SP_PARCELA, SP_VENCIMENTO, SP_EMISSAO, SP_VALOR, SP_ATRZ,');
+      SQL.Add(' SP_DIAS, SP_PIX FROM SP_RETORNO_SITE_SPEED(:cliente, :date)');
+
+      Params.ParamByName('cliente').Value   := pCliente;
+      Params.ParamByName('data').AsDateTime := now;
+    end;
+      try
+        qry.Open;
+
+        while not qry.Eof do begin
+          Boleto := TDadosBoleto.Create();
+
+          Boleto.Documento  := qry.FieldByName('SP_DOCUMENTO').AsString;
+          Boleto.Parcela    := qry.FieldByName('SP_PARCELA').AsInteger;
+          Boleto.Vencimento := qry.FieldByName('SP_VENCIMENTO').AsString;
+          Boleto.Emissao    := qry.FieldByName('SP_EMISSAO').AsString;
+          Boleto.Valor      := qry.FieldByName('SP_VALOR').AsCurrency;
+          Boleto.Atrz       := qry.FieldByName('SP_ATRZ').AsString;
+          Boleto.Dias       := qry.FieldByName('SP_DIAS').AsString;
+          Boleto.Pix        := qry.FieldByName('SP_PIX').AsCurrency;
+
+          Result.Add(Boleto);
+
+          qry.Next;
+        end;
+      except on E: Exception do begin
+          Result.Free;
+          raise;
+      end;
+    end;
+  Finally
+    qry.Free;
+  end;
+end;
+
+function TSpeedBoletos.lista_mem_table: TFDMemTable;
+var
+  qry: TFDQuery;
+begin
+  Result := TFDMemTable.Create(nil);
+  qry := TFDQuery.Create(nil);
+
+  try
+    qry.Connection := FConn;
+
+    qry.SQL.Add('SELECT SP_DOCUMENTO, SP_PARCELA, SP_VENCIMENTO, SP_EMISSAO, SP_VALOR,');
+    qry.SQL.Add('SP_ATRZ, SP_DIAS, SP_PIX FROM SP_RETORNO_SITE_SPEED(:cliente, :data)');
+
+    qry.ParamByName('cliente').AsInteger := pCliente;
+    qry.ParamByName('data').AsDateTime   := Now;
+
+    qry.Open;
+
+    Result.Data := qry.Data;
+  finally
+    qry.Free;
+  end;
+
+end;
+
+end.

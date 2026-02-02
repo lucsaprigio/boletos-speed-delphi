@@ -1,0 +1,81 @@
+unit frm.boletos.speed;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids,
+  Vcl.ExtCtrls, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Comp.DataSet, FireDAC.Comp.Client, uDTOBoletos,
+  controller.boletos.speed, dao.retorno.speed.boletos, Vcl.StdCtrls, Vcl.Buttons;
+
+type
+  Tfrm_boletos_speed = class(TForm)
+    pnlTop: TPanel;
+    pnlGrid: TPanel;
+    DBGrid1: TDBGrid;
+    ds_boletos: TDataSource;
+    BitBtn1: TBitBtn;
+    procedure BuscarBoletosAPI;
+    procedure BuscarBoletosLocal;
+    procedure BitBtn1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frm_boletos_speed: Tfrm_boletos_speed;
+
+implementation
+
+uses
+  Data.DB;
+
+{$R *.dfm}
+
+procedure Tfrm_boletos_speed.BitBtn1Click(Sender: TObject);
+begin
+   BuscarBoletosLocal;
+end;
+
+procedure Tfrm_boletos_speed.BuscarBoletosAPI;
+var
+  MemTable             : TFDMemTable;
+  BoletosController    : TControllerBoletosSpeed;
+  vCliente             : Integer;
+begin
+    MemTable   := TFDMemTable.Create(nil);
+  vCliente   := 1;
+
+  BoletosController := TControllerBoletosSpeed.Create;
+  try
+   MemTable := BoletosController.BuscarBoletos(vCliente);
+
+   ds_boletos.DataSet := MemTable;
+  finally
+    BoletosController.Free;
+  end;
+end;
+
+procedure Tfrm_boletos_speed.BuscarBoletosLocal;
+var
+  BoletosService : TSpeedBoletos;
+  mtDados      : TFDMemTable;
+begin
+ // Buscar Localmente (Testes)
+   BoletosService := TSpeedBoletos.Create(1);
+
+   try
+    mtDados    := BoletosService.lista_mem_table(1);
+
+    ds_boletos.DataSet := mtDados;
+   finally
+     BoletosService.Free;
+   end;
+
+end;
+
+end.

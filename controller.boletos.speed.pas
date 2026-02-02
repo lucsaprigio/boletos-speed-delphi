@@ -1,0 +1,77 @@
+unit controller.boletos.speed;
+
+interface
+
+uses
+  FireDAC.Comp.Client,
+  System.SysUtils,
+  System.Classes,
+  Data.DB,
+  FireDAC.Stan.Intf,
+  REST.Client,
+  REST.Types,
+  REST.Response.Adapter;
+
+type
+  TControllerBoletosSpeed = class
+    private
+      FBaseURL: String;
+    public
+      constructor Create;
+      function BuscarBoletos(vcd_cliente: integer): TFDMemTable;
+  end;
+
+implementation
+
+{ TControllerBoletosSpeed }
+
+function TControllerBoletosSpeed.BuscarBoletos(vcd_cliente: integer): TFDMemTable;
+var
+  LClient   : TRESTClient;
+  LResponse : TRESTResponse;
+  LRequest  : TRESTRequest;
+  LAdapter  :TRESTResponseDataSetAdapter;
+  LMemTable : TFDMemtable;
+begin
+  LClient   := TRESTClient.Create(FBaseURL);
+  LRequest  := TRESTRequest.Create(nil);
+  LResponse := TRESTResponse.Create(nil);
+  LAdapter  := TRESTResponseDataSetAdapter.Create(nil);
+  LMemTable := TFDMemTable.Create(nil);
+
+  try
+    LRequest.Client   := LClient;
+    LRequest.Response := LResponse;
+
+    LRequest.Resource := 'boletos/{id}'; // Supondo rota: /api/boletos/10
+    LRequest.AddParameter('id', vcd_cliente.ToString, TRESTRequestParameterKind.pkURLSEGMENT);
+
+    LRequest.Execute;
+
+    // Converter (JSON -> MemTable)
+    LAdapter.Response := LResponse;
+    LAdapter.Dataset := LMemTable;
+
+    // Se o JSON vier dentro de uma propriedade (ex: {"data": [...]}), use:
+    // LAdapter.RootElement := 'data';
+
+    LAdapter.Active := True; // Isso converte o JSON em dados no MemTable
+
+    // 5. Prepara o retorno
+    Result := LMemTable;
+
+    LAdapter.Dataset := nil;
+  finally
+    LAdapter.Free;
+    LResponse.Free;
+    LRequest.Free;
+    LClient.Free;
+  end;
+end;
+
+constructor TControllerBoletosSpeed.Create;
+begin
+  FBaseURL := 'http:api.speedautomac.app.br';
+end;
+
+end.

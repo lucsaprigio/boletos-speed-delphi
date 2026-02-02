@@ -22,6 +22,7 @@ type
     procedure dbGridDadosDrawColumnCell(Sender: TObject;
       const [Ref] Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     procedure BuscarBoletosAPI;
     procedure BuscarBoletosLocal;
@@ -39,6 +40,12 @@ implementation
 
 procedure Tfrm_boletos_speed.BitBtn1Click(Sender: TObject);
 begin
+if (ds_boletos.DataSet <> nil) and (ds_boletos.DataSet.Active) then
+  begin
+    ShowMessage('Os Boletos já estão listados.');
+    Exit;
+  end;
+
    BuscarBoletosLocal;
 end;
 
@@ -105,6 +112,12 @@ begin
   end;
 
   Grid.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure Tfrm_boletos_speed.FormCloseQuery(Sender: TObject;
+  var CanClose: Boolean);
+begin
+    Close;
 end;
 
 procedure Tfrm_boletos_speed.FormCreate(Sender: TObject);

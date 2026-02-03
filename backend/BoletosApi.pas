@@ -15,10 +15,14 @@ type
     memoLog: TMemo;
     Fechar1: TMenuItem;
     pnlPrincipal: TPanel;
+    Timer1: TTimer;
     procedure Fechar1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
+   FIniciando : Boolean;
    procedure Iniciar;
   public
     { Public declarations }
@@ -39,10 +43,12 @@ end;
 
 procedure Tfrm_principal.FormCreate(Sender: TObject);
 begin
-
-    Application.ShowMainForm := False;
-
     Iniciar;
+end;
+
+procedure Tfrm_principal.FormShow(Sender: TObject);
+begin
+  ShowWindow(Application.Handle, SW_HIDE);
 end;
 
 procedure Tfrm_principal.Iniciar;
@@ -75,6 +81,15 @@ begin
 
           THorse.Listen(9000);
      end).Start;
+end;
+
+procedure Tfrm_principal.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled := False;
+
+  Self.Hide;
+
+  ShowWindow(Application.Handle, SW_HIDE);
 end;
 
 procedure Tfrm_principal.TrayIconDblClick(Sender: TObject);

@@ -17,12 +17,12 @@ type
     dbGridDados: TDBGrid;
     ds_boletos: TDataSource;
     BitBtn1: TBitBtn;
+    mtBoletos: TFDMemTable;
     procedure BitBtn1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure dbGridDadosDrawColumnCell(Sender: TObject;
       const [Ref] Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     procedure BuscarBoletosAPI;
     procedure BuscarBoletosLocal;
@@ -46,23 +46,20 @@ if (ds_boletos.DataSet <> nil) and (ds_boletos.DataSet.Active) then
     Exit;
   end;
 
-   BuscarBoletosLocal;
+   BuscarBoletosAPI;
 end;
 
 procedure Tfrm_boletos_speed.BuscarBoletosAPI;
 var
-  MemTable             : TFDMemTable;
   BoletosController    : TControllerBoletosSpeed;
-  vCliente             : Integer;
+  LCliente             : Integer;
 begin
-    MemTable   := TFDMemTable.Create(nil);
-  vCliente   := 1;
-
+  LCliente   := 3;
   BoletosController := TControllerBoletosSpeed.Create;
-  try
-   MemTable := BoletosController.BuscarBoletos(vCliente);
 
-   ds_boletos.DataSet := MemTable;
+  try
+   BoletosController.BuscarBoletos(LCliente, mtBoletos);
+   MontarGrid(mtBoletos);
   finally
     BoletosController.Free;
   end;
@@ -114,12 +111,6 @@ begin
   Grid.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure Tfrm_boletos_speed.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
-begin
-    Close;
-end;
-
 procedure Tfrm_boletos_speed.FormCreate(Sender: TObject);
 begin
     dbGridDados.DataSource := ds_boletos;
@@ -165,6 +156,7 @@ begin
      begin
         Field.DisplayLabel := 'Vencimento';
         Field.Alignment    := taCenter;
+        Field.DisplayWidth := 15;
         // Ajusta a máscara para Data
         if Field is TDateTimeField then
           TDateTimeField(Field).DisplayFormat := 'dd/mm/yyyy';
@@ -189,7 +181,7 @@ begin
      end;
      7:
      begin
-        Field.DisplayLabel := 'Vencimento';
+        Field.DisplayLabel := 'Emissão';
         Field.Alignment    := taCenter;
         // Ajusta a máscara para Data
         if Field is TDateTimeField then

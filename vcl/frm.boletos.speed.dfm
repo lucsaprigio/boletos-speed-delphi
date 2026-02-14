@@ -11,7 +11,6 @@ object frm_boletos_speed: Tfrm_boletos_speed
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -22,9 +21,6 @@ object frm_boletos_speed: Tfrm_boletos_speed
     Height = 41
     Align = alTop
     TabOrder = 0
-    ExplicitLeft = 72
-    ExplicitTop = 48
-    ExplicitWidth = 185
     object BitBtn1: TBitBtn
       Left = 1
       Top = 10
@@ -43,10 +39,6 @@ object frm_boletos_speed: Tfrm_boletos_speed
     Align = alClient
     BevelOuter = bvSpace
     TabOrder = 1
-    ExplicitLeft = 327
-    ExplicitTop = 264
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object dbGridDados: TDBGrid
       Left = 1
       Top = 1
@@ -64,7 +56,19 @@ object frm_boletos_speed: Tfrm_boletos_speed
     end
   end
   object ds_boletos: TDataSource
+    DataSet = mtBoletos
     Left = 864
     Top = 97
+  end
+  object mtBoletos: TFDMemTable
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    Left = 864
+    Top = 153
   end
 end

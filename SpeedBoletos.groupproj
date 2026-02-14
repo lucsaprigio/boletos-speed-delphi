@@ -6,6 +6,9 @@
         <Projects Include="backend\ApiBoleto.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="vcl\BoletosSpeed.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="ApiBoleto:Make">
         <MSBuild Projects="backend\ApiBoleto.dproj" Targets="Make"/>
     </Target>
+    <Target Name="BoletosSpeed">
+        <MSBuild Projects="vcl\BoletosSpeed.dproj"/>
+    </Target>
+    <Target Name="BoletosSpeed:Clean">
+        <MSBuild Projects="vcl\BoletosSpeed.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="BoletosSpeed:Make">
+        <MSBuild Projects="vcl\BoletosSpeed.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ApiBoleto"/>
+        <CallTarget Targets="ApiBoleto;BoletosSpeed"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ApiBoleto:Clean"/>
+        <CallTarget Targets="ApiBoleto:Clean;BoletosSpeed:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ApiBoleto:Make"/>
+        <CallTarget Targets="ApiBoleto:Make;BoletosSpeed:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

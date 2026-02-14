@@ -1,11 +1,12 @@
 {
-	"name": "horse",
+	"name": "boletos-speed-delphi",
 	"description": "",
 	"version": "1.0.0",
 	"homepage": "",
 	"mainsrc": "./src",
 	"projects": [],
 	"dependencies": {
-		"github.com/hashload/horse": "^3.1.9"
+		"github.com/hashload/horse": "^3.1.9",
+		"github.com/viniciussanchez/restrequest4delphi": "^v4.0.23"
 	}
 }

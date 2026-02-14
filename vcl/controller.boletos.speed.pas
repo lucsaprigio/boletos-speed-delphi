@@ -10,7 +10,8 @@ uses
   FireDAC.Stan.Intf,
   REST.Client,
   REST.Types,
-  REST.Response.Adapter;
+  REST.Response.Adapter,
+  RESTRequest4D;
 
 type
   TControllerBoletosSpeed = class
@@ -18,60 +19,49 @@ type
       FBaseURL: String;
     public
       constructor Create;
-      function BuscarBoletos(vcd_cliente: integer): TFDMemTable;
+      procedure BuscarBoletos(aCliente: integer; aMemTable : TFDMemTable);
   end;
 
 implementation
 
 { TControllerBoletosSpeed }
 
-function TControllerBoletosSpeed.BuscarBoletos(vcd_cliente: integer): TFDMemTable;
+procedure TControllerBoletosSpeed.BuscarBoletos(aCliente: integer; aMemTable : TFDMemTable);
 var
-  LClient   : TRESTClient;
-  LResponse : TRESTResponse;
-  LRequest  : TRESTRequest;
-  LAdapter  :TRESTResponseDataSetAdapter;
-  LMemTable : TFDMemtable;
+  LResponse : IResponse;
 begin
-  LClient   := TRESTClient.Create(FBaseURL);
-  LRequest  := TRESTRequest.Create(nil);
-  LResponse := TRESTResponse.Create(nil);
-  LAdapter  := TRESTResponseDataSetAdapter.Create(nil);
-  LMemTable := TFDMemTable.Create(nil);
+
+  if aMemTable.FieldCount = 0 then
+    begin
+      aMemTable.FieldDefs.Add('sp_documento', ftInteger);
+      aMemTable.FieldDefs.Add('sp_parcela', ftInteger);
+      aMemTable.FieldDefs.Add('sp_valor', ftFloat);
+      aMemTable.FieldDefs.Add('sp_vencimento', ftDateTime); // Avisa que é Data!
+      aMemTable.FieldDefs.Add('sp_emissao', ftDateTime);    // Avisa que é Data!
+      aMemTable.FieldDefs.Add('sp_atrz', ftString, 10);
+      aMemTable.FieldDefs.Add('sp_dias', ftInteger);
+      aMemTable.FieldDefs.Add('sp_pix', ftFloat);
+
+      aMemTable.CreateDataSet;
+    end;
+
+  if aMemTable.Active then
+    aMemTable.EmptyDataSet;
 
   try
-    LRequest.Client   := LClient;
-    LRequest.Response := LResponse;
-
-    LRequest.Resource := 'boletos/{id}'; // Supondo rota: /api/boletos/10
-    LRequest.AddParameter('id', vcd_cliente.ToString, TRESTRequestParameterKind.pkURLSEGMENT);
-
-    LRequest.Execute;
-
-    // Converter (JSON -> MemTable)
-    LAdapter.Response := LResponse;
-    LAdapter.Dataset := LMemTable;
-
-    // Se o JSON vier dentro de uma propriedade (ex: {"data": [...]}), use:
-    // LAdapter.RootElement := 'data';
-
-    LAdapter.Active := True; // Isso converte o JSON em dados no MemTable
-
-    // 5. Prepara o retorno
-    Result := LMemTable;
-
-    LAdapter.Dataset := nil;
-  finally
-    LAdapter.Free;
-    LResponse.Free;
-    LRequest.Free;
-    LClient.Free;
+    LResponse := TRequest.New.BaseURL(FBaseURL)
+                 .Resource('/api/boletos/' + aCliente.ToString)
+                 .DataSetAdapter(aMemTable)
+                 .Get;
+  except on E:Exception do begin
+       raise Exception.Create('Erro ao buscar Dados : ' + E.Message);
+    end;
   end;
 end;
 
 constructor TControllerBoletosSpeed.Create;
 begin
-  FBaseURL := 'http:api.speedautomac.app.br';
+  FBaseURL := 'http://localhost:9000';
 end;
 
 end.

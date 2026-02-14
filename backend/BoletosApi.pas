@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ExtCtrls,
 
-  Horse, Horse.Jhonson;
+  Horse, Horse.Jhonson, Boletos.Utils.Configuracao;
 
 type
   Tfrm_principal = class(TForm)
@@ -16,11 +16,13 @@ type
     Fechar1: TMenuItem;
     pnlPrincipal: TPanel;
     Timer1: TTimer;
+    Minimizar1: TMenuItem;
     procedure Fechar1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure Minimizar1Click(Sender: TObject);
   private
    FIniciando : Boolean;
    procedure Iniciar;
@@ -35,6 +37,8 @@ implementation
 
 {$R *.dfm}
 
+uses ApiBoleto.Routers.Boletos;
+
 procedure Tfrm_principal.Fechar1Click(Sender: TObject);
 begin
      THorse.StopListen;
@@ -43,7 +47,14 @@ end;
 
 procedure Tfrm_principal.FormCreate(Sender: TObject);
 begin
-    Iniciar;
+    ApiBoleto.Routers.Boletos.RegistrarRotas;
+
+    TThread.CreateAnonymousThread(
+    procedure
+      begin
+       Iniciar;
+    end).Start;
+
 end;
 
 procedure Tfrm_principal.FormShow(Sender: TObject);
@@ -54,33 +65,26 @@ end;
 procedure Tfrm_principal.Iniciar;
 begin
      // Criar o Horse dentro de uma Thread
+     TAppConfig.Carregar;
 
-     TThread.CreateAnonymousThread(procedure
-     begin
-        THorse.Use(Jhonson());
+     THorse.Use(Jhonson());
+     THorse.Listen(9000);
 
-        THorse.Get('/spdboleto',
-          procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
-          begin
-            Res.Send('Api Rodando...');
+     TThread.Synchronize(nil,
+     procedure
+       begin
+         frm_principal.MemoLog.Lines.Add('--------------------------------');
+         frm_principal.MemoLog.Lines.Add('SERVIDOR INICIADO EM: ' + DateTimeToStr(Now));
+         frm_principal.MemoLog.Lines.Add('Porta: 9000');
+         frm_principal.MemoLog.Lines.Add('Aguardando conexões...');
+         frm_principal.MemoLog.Lines.Add('--------------------------------');
+       end);
+end;
 
-            TThread.Synchronize(nil, procedure
-            begin
-              frm_principal.memoLog.Lines.Add('Requisição recebida em ' + DateTimeToStr(Now));
-            end);
-          end);
-
-          TThread.Synchronize(nil, procedure
-              begin
-                frm_principal.MemoLog.Lines.Add('--------------------------------');
-                frm_principal.MemoLog.Lines.Add('SERVIDOR INICIADO EM: ' + DateTimeToStr(Now));
-                frm_principal.MemoLog.Lines.Add('Porta: 9000');
-                frm_principal.MemoLog.Lines.Add('Aguardando conexões...');
-                frm_principal.MemoLog.Lines.Add('--------------------------------');
-              end);
-
-          THorse.Listen(9000);
-     end).Start;
+procedure Tfrm_principal.Minimizar1Click(Sender: TObject);
+begin
+  if Self.Visible then
+      Self.Hide;
 end;
 
 procedure Tfrm_principal.Timer1Timer(Sender: TObject);

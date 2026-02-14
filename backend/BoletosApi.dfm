@@ -1,7 +1,7 @@
 object frm_principal: Tfrm_principal
   Left = 0
   Top = 0
-  BorderIcons = [biSystemMenu]
+  BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'frm_principal'
   ClientHeight = 464
@@ -26,8 +26,6 @@ object frm_principal: Tfrm_principal
     Align = alClient
     Caption = 'pnlPrincipal'
     TabOrder = 0
-    ExplicitWidth = 615
-    ExplicitHeight = 454
     object memoLog: TMemo
       Left = 1
       Top = 1
@@ -37,8 +35,6 @@ object frm_principal: Tfrm_principal
       PopupMenu = PopupMenu
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 613
-      ExplicitHeight = 452
     end
   end
   object TrayIcon: TTrayIcon
@@ -51,6 +47,10 @@ object frm_principal: Tfrm_principal
   object PopupMenu: TPopupMenu
     Left = 528
     Top = 88
+    object Minimizar1: TMenuItem
+      Caption = 'Minimizar'
+      OnClick = Minimizar1Click
+    end
     object Fechar1: TMenuItem
       Caption = 'Fechar'
       OnClick = Fechar1Click

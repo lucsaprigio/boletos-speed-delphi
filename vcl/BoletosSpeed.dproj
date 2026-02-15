@@ -111,6 +111,13 @@
         <DCCReference Include="dao.retorno.speed.boletos.pas"/>
         <DCCReference Include="uDTOBoletos.pas"/>
         <DCCReference Include="controller.boletos.speed.pas"/>
+        <DCCReference Include="..\utils\Boletos.Utils.Configuracao.pas"/>
+        <DCCReference Include="..\backend\DTO\ApiBoletos.DTO.Payment.pas"/>
+        <DCCReference Include="..\backend\DTO\ApiBoletos.DTO.Payment.Response.pas"/>
+        <DCCReference Include="frm.visualizador.pix.pas">
+            <Form>frm_visualizador_pix</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -138,6 +145,12 @@
             </Delphi.Personality>
             <Deployment Version="5">
                 <DeployFile LocalName="Win32\Debug\BoletosSpeed.exe" Configuration="Debug" Class="ProjectOutput"/>
+                <DeployFile LocalName="Win32\Debug\BoletosSpeed.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>BoletosSpeed.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>

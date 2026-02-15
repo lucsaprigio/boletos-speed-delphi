@@ -22,6 +22,7 @@ type
     class var FDBPassMSSQL: string;
     class var FMP_ACCESS_TOKEN: string;
     class var FMP_NOTIFICATION_URL: string;
+    class var FAPI_URL: String;
 
   public
     class procedure Carregar;
@@ -42,6 +43,8 @@ type
 
     class property MP_ACCESS_TOKEN : string read FMP_ACCESS_TOKEN write FMP_ACCESS_TOKEN;
     class property MP_NOTIFICATION_URL : string read FMP_NOTIFICATION_URL write FMP_NOTIFICATION_URL;
+
+    class property API_URL: String read FAPI_URL write FAPI_URL;
   end;
 
 implementation
@@ -68,13 +71,15 @@ begin
       lIni.WriteString('Banco', 'User', 'SYSDBA');
       lIni.WriteString('Banco', 'Password', 'masterkey');
 
-      lIni.WriteString('BancoMSSQL', 'Server', '.\SQLEXPRESS');
+      lIni.WriteString('BancoMSSQL', 'Server', 'localhost\SQLEXPRESS');
       lIni.WriteString('BancoMSSQL', 'Database', 'PAG_API_MERC_PAGO');
       lIni.WriteString('BancoMSSQL', 'User', 'sa');
       lIni.WriteString('BancoMSSQL', 'Password', '123456');
 
       lIni.WriteString('MercadoPagoServices', 'MP_ACCESS_TOKEN', '');
       lIni.WriteString('MercadoPagoServices', 'MP_NOTIFICATION_URL', '');
+
+      lIni.WriteString('API', 'API_URL', 'http://localhost:9000');
     finally
       lIni.Free;
     end;
@@ -91,13 +96,15 @@ begin
     FDBUser              := lIni.ReadString('Banco', 'User', 'SYSDBA');
     FDBPass              := lIni.ReadString('Banco', 'Password', 'masterkey');
 
-    FServerMSSQL         := lIni.ReadString('BancoMSSQL', 'Server', '');
+    FServerMSSQL         := lIni.ReadString('BancoMSSQL', 'Server', 'localhost\SQLEXPRESS');
     FDatabaseMSSQL       := lIni.ReadString('BancoMSSQL', 'Database', '');
     FDBUserMSSQL         := lIni.ReadString('BancoMSSQL', 'User', 'sa');
     FDBPassMSSQL         := lIni.ReadString('BancoMSSQL', 'Password', '123456');
 
     FMP_ACCESS_TOKEN     := lIni.ReadString('MercadoPagoServices', 'MP_ACCESS_TOKEN', '');
     FMP_NOTIFICATION_URL := lIni.ReadString('MercadoPagoServices', 'MP_NOTIFICATION_URL', '');
+
+    API_URL              := lIni.ReadString('API', 'API_URL', 'http://localhost:9000');
    finally
     lIni.Free;
    end;

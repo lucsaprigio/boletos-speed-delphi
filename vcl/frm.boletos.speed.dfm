@@ -10,9 +10,7 @@ object frm_boletos_speed: Tfrm_boletos_speed
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object pnlTop: TPanel
     Left = 0
@@ -46,6 +44,7 @@ object frm_boletos_speed: Tfrm_boletos_speed
       Height = 440
       Align = alClient
       DataSource = ds_boletos
+      PopupMenu = popMenu
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
@@ -70,5 +69,16 @@ object frm_boletos_speed: Tfrm_boletos_speed
     UpdateOptions.AutoCommitUpdates = True
     Left = 864
     Top = 153
+  end
+  object popMenu: TPopupMenu
+    Left = 776
+    Top = 49
+    object Imprimir1: TMenuItem
+      Caption = 'Imprimir'
+    end
+    object Pix1: TMenuItem
+      Caption = 'Pix'
+      OnClick = Pix1Click
+    end
   end
 end

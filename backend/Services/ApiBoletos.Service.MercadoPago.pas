@@ -10,12 +10,15 @@ type
   iServicePagamentos = interface
     ['{BD2B77FA-0861-45F7-A33A-2BED31E1C7D9}']
     function ProcessarPagamento(aDados : TDTOPaymentBody): string;
+    function BuscarPagemento(aId : Int64): string;
   end;
 
   TServiceMercadoPago = class(TInterfacedObject, iServicePagamentos)
     public
     class function New: iServicePagamentos;
+
     function ProcessarPagamento(aDados : TDTOPaymentBody): string;
+    function BuscarPagemento(aId : Int64): string;
   end;
 
 implementation
@@ -45,9 +48,6 @@ begin
    LHttpClient := THTTPClient.Create;
    LStreamBody := TStringStream.Create(LJsonEnvio, TEncoding.UTF8);
 
-   OutputDebugString(PWideChar('--- JSON ENVIADO PARA O MP ---'));
-   OutputDebugString(PWideChar(LJsonEnvio));
-
    try
      try
       // O GUID trás o hash { hashaqui }, por isso o replace
@@ -59,6 +59,12 @@ begin
 
        LJsonResponse := LHttpClient.Post('https://api.mercadopago.com/v1/payments', LStreamBody);
 
+       OutputDebugString(PWideChar('--- RETORNO DO MP ---'));
+       OutputDebugString(PWideChar(LJsonResponse.ContentAsString(TEncoding.UTF8)));
+
+       if LJsonResponse.StatusCode >= 400 then
+         raise Exception.Create('Recusado pelo MP: ' + LJsonResponse.ContentAsString(TEncoding.UTF8));
+
        Result := LJsonResponse.ContentAsString(TEncoding.UTF8);
      except on E: Exception do begin
          raise Exception.Create('Erro na comunicação com a API do Mercado Pago: ' + E.Message);
@@ -68,6 +74,31 @@ begin
      LHttpClient.Free;
      LStreamBody.Free;
    end;
+end;
+
+function TServiceMercadoPago.BuscarPagemento(aId: Int64): string;
+var
+ LHttpClient : THTTPClient;
+ LJsonResponse : IHTTPResponse;
+ LJsonEnvio    : string;
+begin
+    LHttpClient := THTTPClient.Create;
+    try
+      LHttpClient.CustomHeaders['Content-Type']      := 'application.json';
+      LHttpClient.CustomHeaders['Authorization']     := 'Bearer ' + TAppConfig.MP_ACCESS_TOKEN;
+
+      LJsonResponse := LHttpClient.Get('https://api.mercadopago.com/v1/payments/' + IntToStr(aId));
+
+      if LJsonResponse.StatusCode >= 400 then
+         raise Exception.Create('Recusado pelo Mercado Pago: ' + LJsonResponse.ContentAsString(TEncoding.UTF8));
+
+      Result := LJsonResponse.ContentAsString(TEncoding.UTF8);
+    except on E: Exception
+      do begin
+       raise Exception.Create('Erro na comunicação com a API do Mercado Pago: ' + E.Message);
+    end;
+    end;
+
 end;
 
 end.

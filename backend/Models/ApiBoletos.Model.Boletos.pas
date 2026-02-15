@@ -8,7 +8,6 @@ uses
 type
   TModelBoleto = class
     class function BuscarBoletosPorID(aCodEmpresa: Integer): TJSONArray;
-
   end;
 
 implementation

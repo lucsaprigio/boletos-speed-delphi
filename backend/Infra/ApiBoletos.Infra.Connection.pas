@@ -5,7 +5,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
   FireDAC.Phys, FireDAC.ConsoleUI.Wait, Data.DB, FireDAC.Comp.Client,
-  FireDAC.Phys.FB, FireDAC.Phys.FBDef, System.SysUtils, FireDAC.DApt,
+  FireDAC.Phys.FB, FireDAC.Phys.FBDef, System.SysUtils, FireDAC.DApt, FireDAC.Phys.MSSQL,
   Boletos.Utils.Configuracao;
 
 type
@@ -95,15 +95,16 @@ begin
 
        Params.DriverID := 'MSSQL';
 
-       Params.DriverID := 'MSSQL';
-
         // Aqui você vai precisar criar essas variáveis novas no seu Boletos.Utils.Configuracao
         // ou passar manualmente caso seja fixo.
-        Params.Values['Server']    := TAppConfig.ServerMSSQL; // Ex: '192.168.0.10' ou 'localhost\SQLEXPRESS'
-        Params.Database            := TAppConfig.DatabaseMSSQL;
-        Params.UserName            := TAppConfig.DBUserMSSQL;
-        Params.Password            := TAppConfig.DBPassMSSQL;
-        Params.Values['OSAuthent'] := 'No'; // Define que usa Usuario e Senha, não o Windows.
+        Params.Values['Server']                  := TAppConfig.ServerMSSQL; // Ex: '192.168.0.10' ou 'localhost\SQLEXPRESS'
+        Params.Database                          := TAppConfig.DatabaseMSSQL;
+        Params.UserName                          := TAppConfig.DBUserMSSQL;
+        Params.Password                          := TAppConfig.DBPassMSSQL;
+        Params.Values['OSAuthent']               := 'No'; // Define que usa Usuario e Senha, não o Windows.
+
+
+        Params.Values['ODBCAdvanced'] := 'Encrypt=yes;TrustServerCertificate=yes;';
 
         LoginPrompt := False;
      end;

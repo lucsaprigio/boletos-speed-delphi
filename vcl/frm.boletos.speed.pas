@@ -8,7 +8,9 @@ uses
   Vcl.ExtCtrls, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Comp.DataSet, FireDAC.Comp.Client, uDTOBoletos,
-  controller.boletos.speed, dao.retorno.speed.boletos, Vcl.StdCtrls, Vcl.Buttons;
+  controller.boletos.speed, dao.retorno.speed.boletos, Vcl.StdCtrls, Vcl.Buttons,
+  Vcl.Menus, Boletos.Utils.Configuracao, ApiBoletos.DTO.Payment,
+  ApiBoletos.DTO.Payment.Response, Winapi.ShellAPI;
 
 type
   Tfrm_boletos_speed = class(TForm)
@@ -18,11 +20,15 @@ type
     ds_boletos: TDataSource;
     BitBtn1: TBitBtn;
     mtBoletos: TFDMemTable;
+    popMenu: TPopupMenu;
+    Imprimir1: TMenuItem;
+    Pix1: TMenuItem;
     procedure BitBtn1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure dbGridDadosDrawColumnCell(Sender: TObject;
       const [Ref] Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure Pix1Click(Sender: TObject);
   private
     procedure BuscarBoletosAPI;
     procedure BuscarBoletosLocal;
@@ -37,6 +43,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses frm.visualizador.pix;
 
 procedure Tfrm_boletos_speed.BitBtn1Click(Sender: TObject);
 begin
@@ -54,7 +62,7 @@ var
   BoletosController    : TControllerBoletosSpeed;
   LCliente             : Integer;
 begin
-  LCliente   := 3;
+  LCliente   := 1;
   BoletosController := TControllerBoletosSpeed.Create;
 
   try
@@ -113,6 +121,7 @@ end;
 
 procedure Tfrm_boletos_speed.FormCreate(Sender: TObject);
 begin
+    TAppConfig.Carregar;
     dbGridDados.DataSource := ds_boletos;
 end;
 
@@ -189,6 +198,44 @@ begin
      end;
     end;
   end;
+end;
+
+procedure Tfrm_boletos_speed.Pix1Click(Sender: TObject);
+var
+  LResponse : TDTOPaymentResponse;
+  LRequestBody  : TDTOPaymentBody;
+begin
+    // Efetuar o pagamento com PIX
+    if (mtBoletos.IsEmpty) then exit;
+
+    LRequestBody := TDTOPaymentBody.Create;
+    try
+      LRequestBody.TransactionAmount := mtBoletos.FieldByName('SP_VALOR').AsCurrency;
+      LRequestBody.PaymentMethodId   := 'pix';
+      LRequestBody.Description       := 'Pagamento de Duplicata ' + mtBoletos.FieldByName('SP_DOCUMENTO').AsString;
+      LRequestBody.ExternalReference := mtBoletos.FieldByName('SP_DOCUMENTO').AsString;
+      LRequestBody.Payer.Email       := 'lucas.speedautomac@gmail.com';
+      LRequestBody.Payer.FirstName   := 'Cliente';
+
+      Screen.Cursor := crHourGlass;
+
+      LResponse := TControllerBoletosSpeed.CriarPix(LRequestBody);
+
+      try
+       if LResponse.TicketUrl <> '' then begin
+         frm_visualizador_pix := Tfrm_visualizador_pix.Create(Self);
+         frm_visualizador_pix.AbrirPagamento(LResponse.TicketUrl, LResponse.IdPagamento);
+       end
+       else begin
+         ShowMessage('Pix gerado, porém link indisponível, tente mais tarde');
+       end;
+      finally
+        if Assigned(LResponse) then LResponse.Free;
+      end;
+    finally
+       LRequestBody.Free;
+       Screen.Cursor := crDefault;
+    end;
 end;
 
 end.

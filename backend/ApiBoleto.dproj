@@ -139,6 +139,9 @@
         <DCCReference Include="DTO\ApiBoletos.DTO.Payment.pas"/>
         <DCCReference Include="Controllers\ApiBoletos.Controller.Pagamentos.pas"/>
         <DCCReference Include="Services\ApiBoletos.Service.MercadoPago.pas"/>
+        <DCCReference Include="DTO\ApiBoletos.DTO.MercadoPago.Response.pas"/>
+        <DCCReference Include="DTO\ApiBoletos.DTO.Payment.Response.pas"/>
+        <DCCReference Include="Models\ApiBoletos.Model.PagamentosMP.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

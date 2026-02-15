@@ -10,7 +10,10 @@ uses
   Boletos.Utils.Configuracao in '..\utils\Boletos.Utils.Configuracao.pas',
   ApiBoletos.DTO.Payment in 'DTO\ApiBoletos.DTO.Payment.pas',
   ApiBoletos.Controller.Pagamentos in 'Controllers\ApiBoletos.Controller.Pagamentos.pas',
-  ApiBoletos.Service.MercadoPago in 'Services\ApiBoletos.Service.MercadoPago.pas';
+  ApiBoletos.Service.MercadoPago in 'Services\ApiBoletos.Service.MercadoPago.pas',
+  ApiBoletos.DTO.MercadoPago.Response in 'DTO\ApiBoletos.DTO.MercadoPago.Response.pas',
+  ApiBoletos.DTO.Payment.Response in 'DTO\ApiBoletos.DTO.Payment.Response.pas',
+  ApiBoletos.Model.PagamentosMP in 'Models\ApiBoletos.Model.PagamentosMP.pas';
 
 {$R *.res}
 

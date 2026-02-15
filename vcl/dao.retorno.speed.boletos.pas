@@ -14,7 +14,8 @@ uses
   System.SysUtils,
   Vcl.Dialogs,
   FireDAC.Phys.FB,
-  uDTOBoletos;
+  uDTOBoletos,
+  Boletos.Utils.Configuracao;
 
 type
   TSpeedBoletos = class
@@ -46,13 +47,18 @@ begin
 
 
    with FConn do begin
-     Params.Clear;
-     Params.DriverID := 'FB';
-     Params.Database := '192.168.0.90:/database/Financeiro/financeiro.fdb';
-     Params.UserName := 'sysdba';
-     Params.Password := 'masterkey';
+      Params.Clear;
+      Params.DriverID := TAppConfig.DriverID;
 
-     LoginPrompt := False;
+      Params.Values['Protocol']  := 'TCPIP';
+      Params.Values['Port']      := TAppConfig.Port;
+      Params.Values['Server']    := TAppConfig.Server;
+
+      Params.Database            := TAppConfig.Database;
+      Params.UserName            := TAppConfig.DBUser;
+      Params.Password            := TAppConfig.DBPass;
+
+      LoginPrompt := False;
    end;
 end;
 

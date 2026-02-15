@@ -7,6 +7,8 @@
 	"projects": [],
 	"dependencies": {
 		"github.com/hashload/horse": "^3.1.9",
+		"github.com/viniciussanchez/dataset-serialize": "^v2.5.9",
+		"github.com/viniciussanchez/dataset-serialize-adapter-restrequest4delphi": "^1.0.3",
 		"github.com/viniciussanchez/restrequest4delphi": "^v4.0.23"
 	}
 }

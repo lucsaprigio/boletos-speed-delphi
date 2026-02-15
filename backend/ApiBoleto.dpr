@@ -7,7 +7,10 @@ uses
   ApiBoletos.Controllers.Boletos in 'Controllers\ApiBoletos.Controllers.Boletos.pas',
   ApiBoletos.Model.Boletos in 'Models\ApiBoletos.Model.Boletos.pas',
   ApiBoletos.Infra.Connection in 'Infra\ApiBoletos.Infra.Connection.pas',
-  Boletos.Utils.Configuracao in '..\utils\Boletos.Utils.Configuracao.pas';
+  Boletos.Utils.Configuracao in '..\utils\Boletos.Utils.Configuracao.pas',
+  ApiBoletos.DTO.Payment in 'DTO\ApiBoletos.DTO.Payment.pas',
+  ApiBoletos.Controller.Pagamentos in 'Controllers\ApiBoletos.Controller.Pagamentos.pas',
+  ApiBoletos.Service.MercadoPago in 'Services\ApiBoletos.Service.MercadoPago.pas';
 
 {$R *.res}
 

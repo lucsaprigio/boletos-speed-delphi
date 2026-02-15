@@ -3,7 +3,7 @@ unit ApiBoleto.Routers.Boletos;
 interface
 
 uses
-  Horse;
+  Horse, ApiBoletos.Controller.Pagamentos;
 
 procedure RegistrarRotas;
 
@@ -14,8 +14,9 @@ uses ApiBoletos.Controllers.Boletos;
 procedure RegistrarRotas;
 begin
   // Vamos chamar spdboleto/cd_cliente.
-  // Vamos jogar o controllera aqui dentro.
+  // Vamos jogar o controller a aqui dentro.
   THorse.Get('/api/boletos/:id', TControllerBoletos.GetBoletosByClient);
+  THorse.Post('/api/pagamento', TControllerPagamentos.EfetuarPagamento);
 end;
 
 end.

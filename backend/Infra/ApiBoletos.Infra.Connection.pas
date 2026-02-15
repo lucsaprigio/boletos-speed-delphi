@@ -26,6 +26,16 @@ type
      function Connection: TFDConnection;
   end;
 
+  TInfraConnectionSQLServer = class(TInterfacedObject, iInfraConnection)
+  private
+    FConnection : TFDConnection;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    class function New : iInfraConnection;
+    function Connection: TFDConnection;
+  end;
+
 implementation
 
 { TInfraConnection }
@@ -66,6 +76,50 @@ end;
 function TInfraConnection.Connection: TFDConnection;
 begin
    Result := FConnection;
+end;
+
+{ TInfraConnectionSQLServer }
+
+function TInfraConnectionSQLServer.Connection: TFDConnection;
+begin
+       Result := FConnection;
+end;
+
+constructor TInfraConnectionSQLServer.Create;
+begin
+     FConnection := TFDConnection.Create(nil);
+
+     with FConnection do begin
+       Connected := False;
+       Params.Clear;
+
+       Params.DriverID := 'MSSQL';
+
+       Params.DriverID := 'MSSQL';
+
+        // Aqui você vai precisar criar essas variáveis novas no seu Boletos.Utils.Configuracao
+        // ou passar manualmente caso seja fixo.
+        Params.Values['Server']    := TAppConfig.ServerMSSQL; // Ex: '192.168.0.10' ou 'localhost\SQLEXPRESS'
+        Params.Database            := TAppConfig.DatabaseMSSQL;
+        Params.UserName            := TAppConfig.DBUserMSSQL;
+        Params.Password            := TAppConfig.DBPassMSSQL;
+        Params.Values['OSAuthent'] := 'No'; // Define que usa Usuario e Senha, não o Windows.
+
+        LoginPrompt := False;
+     end;
+
+     FConnection.Connected := True;
+end;
+
+destructor TInfraConnectionSQLServer.Destroy;
+begin
+   FConnection.Free;
+  inherited;
+end;
+
+class function TInfraConnectionSQLServer.New: iInfraConnection;
+begin
+     Result := Self.Create;
 end;
 
 end.

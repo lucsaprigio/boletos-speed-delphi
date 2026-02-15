@@ -14,6 +14,14 @@ type
     class var FDatabase: string;
     class var FServer: string;
     class var FDriverID: string;
+    class var FDBUserMSSQL: string;
+    class var FPortMSSQL: string;
+    class var FDatabaseMSSQL: string;
+    class var FServerMSSQL: string;
+    class var FDriverMSSQL: string;
+    class var FDBPassMSSQL: string;
+    class var FMP_ACCESS_TOKEN: string;
+    class var FMP_NOTIFICATION_URL: string;
 
   public
     class procedure Carregar;
@@ -24,6 +32,16 @@ type
     class property Database: string read FDatabase;
     class property DBUser: string read FDBUser;
     class property DBPass: string read FDBPass;
+
+    class property DriverMSSQL : string read FDriverMSSQL;
+    class property ServerMSSQL: string read FServerMSSQL;
+    class property PortMSSQL: string read FPortMSSQL;
+    class property DatabaseMSSQL: string read FDatabaseMSSQL;
+    class property DBUserMSSQL: string read FDBUserMSSQL;
+    class property DBPassMSSQL: string read FDBPassMSSQL;
+
+    class property MP_ACCESS_TOKEN : string read FMP_ACCESS_TOKEN write FMP_ACCESS_TOKEN;
+    class property MP_NOTIFICATION_URL : string read FMP_NOTIFICATION_URL write FMP_NOTIFICATION_URL;
   end;
 
 implementation
@@ -49,6 +67,14 @@ begin
       lIni.WriteString('Banco', 'Database', '');
       lIni.WriteString('Banco', 'User', 'SYSDBA');
       lIni.WriteString('Banco', 'Password', 'masterkey');
+
+      lIni.WriteString('BancoMSSQL', 'Server', '.\SQLEXPRESS');
+      lIni.WriteString('BancoMSSQL', 'Database', 'PAG_API_MERC_PAGO');
+      lIni.WriteString('BancoMSSQL', 'User', 'sa');
+      lIni.WriteString('BancoMSSQL', 'Password', '123456');
+
+      lIni.WriteString('MercadoPagoServices', 'MP_ACCESS_TOKEN', '');
+      lIni.WriteString('MercadoPagoServices', 'MP_NOTIFICATION_URL', '');
     finally
       lIni.Free;
     end;
@@ -58,12 +84,20 @@ begin
    lIni := TIniFile.Create(lCaminhoIni);
 
    try
-    FDriverID          := lIni.ReadString('Banco', 'DriverID', 'FB');
-    FServer            := lIni.ReadString('Banco', 'Server', '127.0.0.1');
-    FPort              := lIni.ReadString('Banco', 'Port', '3050');
-    FDatabase          := lIni.ReadString('Banco', 'Database', '');
-    FDBUser            := lIni.ReadString('Banco', 'User', 'SYSDBA');
-    FDBPass            := lIni.ReadString('Banco', 'Password', 'masterkey');
+    FDriverID            := lIni.ReadString('Banco', 'DriverID', 'FB');
+    FServer              := lIni.ReadString('Banco', 'Server', '127.0.0.1');
+    FPort                := lIni.ReadString('Banco', 'Port', '3050');
+    FDatabase            := lIni.ReadString('Banco', 'Database', '');
+    FDBUser              := lIni.ReadString('Banco', 'User', 'SYSDBA');
+    FDBPass              := lIni.ReadString('Banco', 'Password', 'masterkey');
+
+    FServerMSSQL         := lIni.ReadString('BancoMSSQL', 'Server', '');
+    FDatabaseMSSQL       := lIni.ReadString('BancoMSSQL', 'Database', '');
+    FDBUserMSSQL         := lIni.ReadString('BancoMSSQL', 'User', 'sa');
+    FDBPassMSSQL         := lIni.ReadString('BancoMSSQL', 'Password', '123456');
+
+    FMP_ACCESS_TOKEN     := lIni.ReadString('MercadoPagoServices', 'MP_ACCESS_TOKEN', '');
+    FMP_NOTIFICATION_URL := lIni.ReadString('MercadoPagoServices', 'MP_NOTIFICATION_URL', '');
    finally
     lIni.Free;
    end;
